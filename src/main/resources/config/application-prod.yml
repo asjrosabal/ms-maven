@@ -55,9 +55,9 @@ spring:
     contexts: prod
     url: jdbc:postgresql://localhost:5432/jhipster
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/jhipster
-    username: jhipster
-    password:
+    url: r2dbc:postgresql://localhost:5432/ms-maven
+    username: postgres
+    password: hitman47
   thymeleaf:
     cache: true
   sleuth:
