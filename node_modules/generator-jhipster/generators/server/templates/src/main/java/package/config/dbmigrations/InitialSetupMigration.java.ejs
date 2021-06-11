@@ -1,0 +1,90 @@
+<%#
+ Copyright 2013-2021 the original author or authors from the JHipster project.
+
+ This file is part of the JHipster project, see https://www.jhipster.tech/
+ for more information.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-%>
+package <%= packageName %>.config.dbmigrations;
+
+import <%= packageName %>.domain.Authority;
+import <%= packageName %>.domain.<%= asEntity('User') %>;
+import <%= packageName %>.security.AuthoritiesConstants;
+import <%= packageName %>.config.Constants;
+
+import com.github.cloudyrock.mongock.ChangeLog;
+import com.github.cloudyrock.mongock.ChangeSet;
+import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl.MongockTemplate;
+
+import java.time.Instant;
+
+/**
+ * Creates the initial database setup.
+ */
+@ChangeLog(order = "001")
+public class InitialSetupMigration {
+
+    @ChangeSet(order = "01", author = "initiator", id = "01-addAuthorities")
+    public void addAuthorities(MongockTemplate mongoTemplate) {
+        Authority adminAuthority = new Authority();
+        adminAuthority.setName(AuthoritiesConstants.ADMIN);
+        Authority userAuthority = new Authority();
+        userAuthority.setName(AuthoritiesConstants.USER);
+        mongoTemplate.save(adminAuthority);
+        mongoTemplate.save(userAuthority);
+    }
+    <%_ if (authenticationType !== 'oauth2') { _%>
+
+    @ChangeSet(order = "02", author = "initiator", id = "02-addUsers")
+    public void addUsers(MongockTemplate mongoTemplate) {
+        Authority adminAuthority = new Authority();
+        adminAuthority.setName(AuthoritiesConstants.ADMIN);
+        Authority userAuthority = new Authority();
+        userAuthority.setName(AuthoritiesConstants.USER);
+
+        <%= asEntity('User') %> adminUser = new <%= asEntity('User') %>();
+        adminUser.setId("user-1");
+        adminUser.setLogin("admin");
+        <%_ if (authenticationType !== 'oauth2') { _%>
+        adminUser.setPassword("$2a$10$gSAhZrxMllrbgj/kkK9UceBPpChGWJA7SYIb1Mqo.n5aNLq1/oRrC");
+        <%_ } _%>
+        adminUser.setFirstName("admin");
+        adminUser.setLastName("Administrator");
+        adminUser.setEmail("admin@localhost");
+        adminUser.setActivated(true);
+        adminUser.setLangKey("<%= nativeLanguage %>");
+        adminUser.setCreatedBy(Constants.SYSTEM);
+        adminUser.setCreatedDate(Instant.now());
+        adminUser.getAuthorities().add(adminAuthority);
+        adminUser.getAuthorities().add(userAuthority);
+        mongoTemplate.save(adminUser);
+
+        <%= asEntity('User') %> userUser = new <%= asEntity('User') %>();
+        userUser.setId("user-2");
+        userUser.setLogin("user");
+        <%_ if (authenticationType !== 'oauth2') { _%>
+        userUser.setPassword("$2a$10$VEjxo0jq2YG9Rbk2HmX9S.k1uZBGYUHdUcid3g/vfiEl7lwWgOH/K");
+        <%_ } _%>
+        userUser.setFirstName("");
+        userUser.setLastName("User");
+        userUser.setEmail("user@localhost");
+        userUser.setActivated(true);
+        userUser.setLangKey("<%= nativeLanguage %>");
+        userUser.setCreatedBy(Constants.SYSTEM);
+        userUser.setCreatedDate(Instant.now());
+        userUser.getAuthorities().add(userAuthority);
+        mongoTemplate.save(userUser);
+    }
+    <%_ } _%>
+}
