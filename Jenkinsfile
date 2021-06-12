@@ -1,20 +1,41 @@
 pipeline {
-    agent any 
+    agent any
+
+    tools {
+        maven 'Maven'
+        nodejs "NodeJs"
+    }
     stages {
-        stage('Build') { 
+      stage ('Initial') {
             steps {
-                echo "build"
+              sh '''
+                   echo "PATH = ${PATH}"
+                   echo "M2_HOME = ${M2_HOME}"
+               '''
             }
         }
-        stage('Test') { 
+        stage ('Compile') {
             steps {
-               echo "build"
+                 sh 'mvn clean compile -e'
             }
         }
-        stage('Deploy') { 
+        stage ('Test') {
             steps {
-                echo "build"
+                 sh 'mvn clean test -e'
             }
+        }
+
+        stage('SonarQube analysis') {
+           steps{
+                script {
+                    def scannerHome = tool 'SonarQube Scanner';//def scannerHome = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    withSonarQubeEnv('Sonar Server') {
+                      //sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=Ms-Maven -Dsonar.sources=target/ -Dsonar.host.url=http://172.18.0.3:9000 -Dsonar.login=14c09fa032024d6f0e5923c7cead79f0bcaa23f3"
+                      sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=Ms-Maven -Dsonar.host.url=http://172.18.0.3:9000 -Dsonar.login=14c09fa032024d6f0e5923c7cead79f0bcaa23f3 -Dsonar.dependencyCheck.jsonReportPath=target/dependency-check-report.json -Dsonar.dependencyCheck.xmlReportPath=target/dependency-check-report.xml -Dsonar.dependencyCheck.htmlReportPath=target/dependency-check-report.html"
+
+                    }
+                }
+           }
         }
     }
 }
