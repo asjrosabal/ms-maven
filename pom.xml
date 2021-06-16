@@ -339,11 +339,7 @@
             <artifactId>metrics-core</artifactId>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
-           <dependency>
-             <groupId>org.owasp</groupId>
-             <artifactId>dependency-check-maven</artifactId>
-             <version>6.2.2</version>
-         </dependency>
+
     </dependencies>
 
     <build>
@@ -777,6 +773,22 @@
 
                 </plugin>
                 <!-- jhipster-needle-maven-add-plugin-management -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <executions>
+                        <execution>
+                            <id>analyze</id>
+                            <goals>
+                                <goal>analyze-only</goal>
+                            </goals>
+                            <configuration>
+                                <failOnWarning>true</failOnWarning>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
