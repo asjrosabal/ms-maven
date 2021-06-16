@@ -785,6 +785,7 @@
                         </execution>
                     </executions>
                     <configuration>
+                        <showSummary>false</showSummary>
                         <failBuildOnCVSS>7</failBuildOnCVSS>
                         <!-- Generate all report formats -->
                         <format>ALL</format>
