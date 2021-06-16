@@ -797,7 +797,7 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>6.1.6</version>
+                    <version>6.2.2</version>
                     <executions>
                         <execution>
                             <goals>
@@ -806,7 +806,7 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <failBuildOnCVSS>7</failBuildOnCVSS>
+                        <failBuildOnCVSS>2</failBuildOnCVSS>
                         <!-- Generate all report formats -->
                         <format>ALL</format>
                         <!-- Don't use Nexus Analyzer -->
@@ -814,6 +814,13 @@
                         <!-- Am I the latest version? -->
                         <versionCheckEnabled>true</versionCheckEnabled>
                     </configuration>
+                    <reportSets>
+                        <reportSet>
+                            <reports>
+                                <report>aggregate</report>
+                            </reports>
+                        </reportSet>
+                    </reportSets>
                 </plugin>
             </plugins>
         </pluginManagement>
