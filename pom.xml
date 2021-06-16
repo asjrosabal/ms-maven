@@ -814,13 +814,7 @@
                         <!-- Am I the latest version? -->
                         <versionCheckEnabled>true</versionCheckEnabled>
                     </configuration>
-                    <reportSets>
-                        <reportSet>
-                            <reports>
-                                <report>aggregate</report>
-                            </reports>
-                        </reportSet>
-                    </reportSets>
+
                 </plugin>
             </plugins>
         </pluginManagement>
