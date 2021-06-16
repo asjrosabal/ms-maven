@@ -784,17 +784,16 @@
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
+                    <!--<configuration>
                         <showSummary>false</showSummary>
                         <failBuildOnCVSS>7</failBuildOnCVSS>
-                        <!-- Generate all report formats -->
+
                         <format>ALL</format>
-                        <!-- Don't use Nexus Analyzer -->
                         <centralAnalyzerEnabled>false</centralAnalyzerEnabled>
-                        <!-- Am I the latest version? -->
+
                         <versionCheckEnabled>true</versionCheckEnabled>
                         <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
-                    </configuration>
+                    </configuration>-->
 
                 </plugin>
 
