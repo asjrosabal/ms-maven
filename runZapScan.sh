@@ -30,8 +30,8 @@ docker exec $ZAP_CONT_ID zap-cli -v -p 2375 active-scan --scanners xss,sqli --re
 docker exec $ZAP_CONT_ID zap-cli -p 2375 report -o /home/zap/report.html -f html
 docker exec $ZAP_CONT_ID zap-cli -p 2375 report -o /home/zap/report.xml -f xml
 
-docker cp $ZAP_CONT_ID:/home/zap/report.xml $reportsDirectory
-docker cp $ZAP_CONT_ID:/home/zap/report.html $reportsDirectory
+#docker cp $ZAP_CONT_ID:/home/zap/report.xml $reportsDirectory
+#docker cp $ZAP_CONT_ID:/home/zap/report.html $reportsDirectory
 
 # Check alerts
 ALERT_CNT=$(docker exec $ZAP_CONT_ID zap-cli -p 2375 --verbose alerts --alert-level $ZAP_ALERT_LVL -f json | jq length)
