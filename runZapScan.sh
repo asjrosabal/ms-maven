@@ -18,7 +18,8 @@ ZAP_CONT_ID=$(docker run --name zap -p 2375:2375 -d owasp/zap2docker-stable zap.
 -config view.mode=attack \
 -config connection.dnsTtlSuccessfulQueries=-1 \
 -config api.addrs.addr.name=.* \
--config api.addrs.addr.regex=true)
+-config api.addrs.addr.regex=true
+--network jenkins)
 
 docker exec $ZAP_CONT_ID zap-cli -v -p 2375 status -t 120
 docker exec $ZAP_CONT_ID zap-cli -v -p 2375 open-url $ZAP_TARGET_URL
