@@ -6,7 +6,7 @@ pipeline {
         nodejs "NodeJs"
     }
     stages {
-      stage ('Initial') {
+     /* stage ('Initial') {
             steps {
               sh '''
                    echo "PATH = ${PATH}"
@@ -43,7 +43,7 @@ pipeline {
                  sh 'mvn org.owasp:dependency-check-maven:check'
                 dependencyCheckPublisher failedNewCritical: 5, failedTotalCritical: 10, pattern: 'terget/dad.xml', unstableNewCritical: 3, unstableTotalCritical: 5
             }
-        }
+        }*/
         
          stage('ZAP'){
         			steps{
@@ -73,6 +73,16 @@ pipeline {
         				    //archiveArtifacts artifacts: '/var/jenkins_home/tools/zap_baseline_report2.html'
         			}
         		}
+        
+        stage('Scan Docker'){
+                    			steps{
+                    			    figlet 'Scan Docker'
+                    		        script{
+                    		            sh '${WORKSPACE}/Dockerfile > anchore_images'
+                    		            anchore 'anchore_images'
+                    		        }
+                    			}
+                    		}
 
     }
 }
