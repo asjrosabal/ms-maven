@@ -45,14 +45,34 @@ pipeline {
             }
         }
         
-          stage('ZAP'){
-			steps{
-				sh '''
-				docker run --add-host=testing.example.com:10.0.0.1 -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-full-scan.py \
-				    -t https://demo.testfire.net/ -g gen.conf -r testreport.html
-				    '''
-			}
-		}
+         stage('ZAP'){
+        			steps{
+        				script{
+        				    env.DOCKER = tool "Docker"
+        				    env.DOCKER_EXEC = "${DOCKER}/bin/docker"
+        				    env.TARGET = 'https://demo.testfire.net/'
+
+        				    sh '${DOCKER_EXEC} rm -f zap2'
+        				    sh '${DOCKER_EXEC} pull owasp/zap2docker-stable'
+                            sh '${DOCKER_EXEC} run --add-host="localhost:192.168.100.4" --rm -e LC_ALL=C.UTF-8 -e LANG=C.UTF-8 --name zap2 -u zap -p 8090:8080 -d owasp/zap2docker-stable zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.disablekey=true'
+                            sh '${DOCKER_EXEC} run --add-host="localhost:192.168.100.4" -v /Users/asajuro/Documents/BCI/AnalyzeQAS/Jenkins-Practica/USACH/Dockerfile/zap/jenkins_home/tools:/zap/wrk/:rw --rm -i owasp/zap2docker-stable zap-baseline.py -t "https://demo.testfire.net/" -I -r zap_baseline_report2.html -l PASS'
+        				}
+        			}
+        		}
+
+        		stage('Publish'){
+        			steps{
+        				publishHTML([
+        				    allowMissing: false,
+        				    alwaysLinkToLastBuild: false,
+        				    keepAll: false,
+        				    reportDir: '/var/jenkins_home/tools',
+        				    reportFiles: 'zap_baseline_report2.html',
+        				    reportName: 'HTML Report',
+        				    reportTitles: ''])
+        				    //archiveArtifacts artifacts: '/var/jenkins_home/tools/zap_baseline_report2.html'
+        			}
+        		}
 
     }
 }
