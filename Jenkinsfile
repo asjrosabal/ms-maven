@@ -74,15 +74,36 @@ pipeline {
         			}
         		}
         
-        stage('Scan Docker'){
+         stage('Scan Docker'){
                     			steps{
                     			    figlet 'Scan Docker'
                     		        script{
-                    		            sh '${WORKSPACE}/Dockerfile > anchore_images'
-                    		            anchore 'anchore_images'
+                    		              //def imageLine = 'debian:latest', mongo:3.2.1, node:10
+                    		              def imageLine = 'mongo:3.2.1'
+                                          writeFile file: 'anchore_images', text: imageLine
+                                          anchore 'anchore_images'
+                                          //echo "mydeveloperplanet/mykubernetesplanet:0.0.4-SNAPSHOT" ${WORKSPACE}/Dockerfile > anchore_images
+                                          //anchore 'anchore_images'
+                                          //sh 'cat ${WORKSPACE}/Dockerfile '
                     		        }
                     			}
                     		}
-
     }
+    post { // slackSend channel: 'notificacion-jenkins', message: 'Se ha terminado una ejecución SUCCESS. Detalles en : ${env.BUILD_URL}'
+        always {
+            script {
+                def COLOR_MAP = [
+                    'SUCCESS': 'good', 
+                    'FAILURE': 'danger',
+                ]
+                println '${env.BUILD_URL}'
+            }
+            
+            slackSend channel: 'notificacion-jenkins',
+                color: 'danger',
+                message: "Se ha terminado una ejecucion del pipeline.",
+                iconEmoji: 'deadpool'
+        }
+     
+     }
 }
