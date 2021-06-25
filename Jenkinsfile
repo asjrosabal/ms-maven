@@ -47,11 +47,13 @@ pipeline {
         
          stage('ZAP'){
         			steps{
+        			    figlet 'Owasp Zap DAST'
         				script{
         				    env.DOCKER = tool "Docker"
         				    env.DOCKER_EXEC = "${DOCKER}/bin/docker"
         				    env.TARGET = 'https://demo.testfire.net/'
-
+        				   
+        				    
         				    sh '${DOCKER_EXEC} rm -f zap2'
         				    sh '${DOCKER_EXEC} pull owasp/zap2docker-stable'
                             sh '${DOCKER_EXEC} run --add-host="localhost:192.168.100.4" --rm -e LC_ALL=C.UTF-8 -e LANG=C.UTF-8 --name zap2 -u zap -p 8090:8080 -d owasp/zap2docker-stable zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.disablekey=true'
@@ -60,9 +62,36 @@ pipeline {
         			}
         		}
 
-        		stage('Publish'){
-        			steps{
-        				publishHTML([
+
+             stage('Scan Docker'){
+                    			steps{
+                    			    figlet 'Scan Docker'
+                    		        script{
+                    		            env.DOCKER = tool "Docker"
+        				                env.DOCKER_EXEC = "${DOCKER}/bin/docker"
+        				             
+                                        sh '''
+                                            ${DOCKER_EXEC} run --rm -v $(pwd):/root/.cache/ aquasec/trivy python:3.4-alpine
+                                        '''
+                                       
+                                         sh '${DOCKER_EXEC} rmi aquasec/trivy'
+    
+                    		        }
+                    			}
+                    		}	
+        
+        
+    }
+     post { 
+        always {
+            script {
+                def COLOR_MAP = [
+                    'SUCCESS': 'good', 
+                    'FAILURE': 'danger',
+                ]
+                
+            }
+            publishHTML([
         				    allowMissing: false,
         				    alwaysLinkToLastBuild: false,
         				    keepAll: false,
@@ -70,39 +99,10 @@ pipeline {
         				    reportFiles: 'zap_baseline_report2.html',
         				    reportName: 'HTML Report',
         				    reportTitles: ''])
-        				    //archiveArtifacts artifacts: '/var/jenkins_home/tools/zap_baseline_report2.html'
-        			}
-        		}
-        
-         stage('Scan Docker'){
-                    			steps{
-                    			    figlet 'Scan Docker'
-                    		        script{
-                    		              //def imageLine = 'debian:latest', mongo:3.2.1, node:10
-                    		              def imageLine = 'mongo:3.2.1'
-                                          writeFile file: 'anchore_images', text: imageLine
-                                          anchore 'anchore_images'
-                                          //echo "mydeveloperplanet/mykubernetesplanet:0.0.4-SNAPSHOT" ${WORKSPACE}/Dockerfile > anchore_images
-                                          //anchore 'anchore_images'
-                                          //sh 'cat ${WORKSPACE}/Dockerfile '
-                    		        }
-                    			}
-                    		}
-    }
-    post { // slackSend channel: 'notificacion-jenkins', message: 'Se ha terminado una ejecución SUCCESS. Detalles en : ${env.BUILD_URL}'
-        always {
-            script {
-                def COLOR_MAP = [
-                    'SUCCESS': 'good', 
-                    'FAILURE': 'danger',
-                ]
-                println '${env.BUILD_URL}'
-            }
             
-            slackSend channel: 'notificacion-jenkins',
+            /*slackSend channel: 'notificacion-jenkins',
                 color: 'danger',
-                message: "Se ha terminado una ejecucion del pipeline.",
-                iconEmoji: 'deadpool'
+                message: "Se ha terminado una ejecucion del pipeline."*/
         }
      
      }
