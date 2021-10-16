@@ -794,13 +794,7 @@
                         <versionCheckEnabled>true</versionCheckEnabled>
                         <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
                     </configuration>-->
-                          <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>aggregate</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
+                       
 
                 </plugin>
 
