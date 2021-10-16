@@ -72,7 +72,7 @@ pipeline {
         				    allowMissing: false,
         				    alwaysLinkToLastBuild: false,
         				    keepAll: false,
-        				    reportDir: '/var/jenkins_home/tools',
+        				    reportDir: '/var/jenkins_home/tools/',
         				    reportFiles: 'zap_baseline_report.html',
         				    reportName: 'HTML Report',
         				    reportTitles: ''])
@@ -95,7 +95,20 @@ pipeline {
                     		        }
                     			}
             }
+
+            stage('Slack'){
+                      steps{
+                          figlet 'Slack Message'
+                          
+                            slackSend channel: 'notificacion-jenkins',
+                            color: 'danger',
+                            message: "Se ha terminado una ejecucion del pipeline."
+                      }
+                  }
+
     }
+    
+      
     
            
 }
